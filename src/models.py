@@ -6,25 +6,49 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
+class Usuario(Base):
+    __tablename__ = 'usuario'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(nullable=False)
+    firstname: Mapped[str] = mapped_column(nullable=False)
+    lastname: Mapped[str] = mapped_column(nullable=False)
+    
+    favoritos: Mapped["Favoritos"] = relationship()
+
+class Favoritos(Base):
+    __tablename__ = 'favoritos'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    
+    usuario_id: Mapped[int] = mapped_column(ForeignKey('usuario.id'))
+    usuario: Mapped["Usuario"] = relationship()
+
+    planeta_id: Mapped[int] = mapped_column(ForeignKey('planetas.id'))
+    planeta: Mapped["Planetas"] = relationship()
+    
+    personaje_id: Mapped[int] = mapped_column(ForeignKey('person.id'))
+    persona: Mapped["Person"] = relationship()
+
+class Planetas(Base):
+    __tablename__ = 'planetas'
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
-    address: Mapped["Address"] = relationship(back_populates="person")
+    gravity: Mapped[str] = mapped_column(nullable=False)
+    climate: Mapped[str] = mapped_column(nullable=False)
+    terrain: Mapped[str] = mapped_column(nullable=False)
+    diameter: Mapped[int] = mapped_column(nullable=False)
+    
+    favoritos: Mapped["Favoritos"] = relationship()
 
-
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
+class Person(Base):
+    __tablename__ = 'person'
     id: Mapped[int] = mapped_column(primary_key=True)
-    street_name: Mapped[str]
-    street_number: Mapped[str]
-    post_code: Mapped[str] = mapped_column(nullable=False)
-    person_id: Mapped[int] = mapped_column(ForeignKey("person.id"))
-    person: Mapped["Person"] = relationship(back_populates="address")
+    name: Mapped[str] = mapped_column(nullable=False)
+    height: Mapped[int] = mapped_column(nullable=False)
+    gender: Mapped[str] = mapped_column(nullable=False)
+    birthyear: Mapped[str] = mapped_column(nullable=False)
+    eyecolor: Mapped[str] = mapped_column(nullable=False)
+
+    favoritos: Mapped["Favoritos"] = relationship()
 
     def to_dict(self):
         return {}
